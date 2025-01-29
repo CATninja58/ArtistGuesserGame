@@ -49,12 +49,12 @@
             });
             filteredArtists = [...artistsData];
             correct_artist = artistsData[Math.floor(Math.random() * artistsData.length)];
+            console.log("Correct Artist:", correct_artist); // Debugging line
             displayArtists();
         }
 
         function searchArtist() {
             const query = document.getElementById("artistSearch").value.toLowerCase();
-            console.log("Search query:", query); // Debugging line
             const searchResults = document.getElementById("searchResults");
             searchResults.innerHTML = '';
 
@@ -108,65 +108,54 @@
             const categories = ["debut", "popularity", "members", "genre", "country", "gender"];
             categories.forEach(category => {
                 const button = document.createElement("button");
-                button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${artist[category]}</span>`;
-                button.onclick = () => showDropdown(button, category, artist[category], guess);
+                const relation = getRelation(category, artist[category], correct_artist[category]);
+                button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${artist[category]} (${relation})</span>`;
+                button.className = getButtonColor(relation);
+                guess.selectedOptions[category] = relation;
                 container.appendChild(button);
             });
+            filterArtists();
         }
 
-        function showDropdown(button, category, value, guess) {
-            const dropdown = document.createElement("select");
-            const options = getCategoryOptions(category);
-
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "Choose an option";
-            dropdown.appendChild(defaultOption);
-
-            options.forEach(option => {
-                const optionElement = document.createElement("option");
-                optionElement.value = option;
-                optionElement.textContent = option;
-                dropdown.appendChild(optionElement);
-            });
-
-            dropdown.onchange = () => {
-                const selectedOption = dropdown.value;
-                guess.selectedOptions[category] = selectedOption;
-                changeButtonColor(button, selectedOption);
-                button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${value} (${selectedOption})</span>`;
-                filterArtists();
-            };
-
-            dropdown.size = options.length;
-            button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${value} (Choose Option)</span>`;
-            button.appendChild(dropdown);
-            dropdown.focus();
-        }
-
-        function getCategoryOptions(category) {
-            switch (category) {
-                case 'debut':
-                    return ['correct', 'later ^', 'earlier v', 'close ^', 'close v'];
-                case 'popularity':
-                    return ['correct', 'higher ^', 'lower v', 'close ^', 'close v'];
-                case 'members':
-                case 'genre':
-                case 'country':
-                case 'gender':
-                    return ['correct', 'wrong'];
-                default:
-                    return [];
+        function getRelation(category, artistValue, correctValue) {
+            if (artistValue === correctValue) {
+                return 'correct';
+            } else if (category === 'debut') {
+                return getDebutRelation(artistValue, correctValue);
+            } else if (category === 'popularity') {
+                return getPopularityRelation(artistValue, correctValue);
+            } else {
+                return 'wrong';
             }
         }
 
-        function changeButtonColor(button, option) {
-            if (option === 'correct') {
-                button.className = 'green';
-            } else if (option === 'close ^' || option === 'close v') {
-                button.className = 'orange';
-            } else if (option === 'wrong') {
-                button.className = 'grey';
+        function getDebutRelation(artistValue, correctValue) {
+            const artistYear = parseInt(artistValue);
+            const correctYear = parseInt(correctValue);
+            if (artistYear > correctYear) {
+                return artistYear - correctYear <= 5 ? 'close ^' : 'later ^';
+            } else {
+                return correctYear - artistYear <= 5 ? 'close v' : 'earlier v';
+            }
+        }
+
+        function getPopularityRelation(artistValue, correctValue) {
+            const artistPopularity = parseInt(artistValue);
+            const correctPopularity = parseInt(correctValue);
+            if (artistPopularity < correctPopularity) {
+                return correctPopularity - artistPopularity <= 50 ? 'close ^' : 'higher ^';
+            } else {
+                return artistPopularity - correctPopularity <= 50 ? 'close v' : 'lower v';
+            }
+        }
+
+        function getButtonColor(relation) {
+            if (relation === 'correct') {
+                return 'green';
+            } else if (relation === 'close ^' || relation === 'close v') {
+                return 'orange';
+            } else {
+                return 'grey';
             }
         }
 
