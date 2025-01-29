@@ -133,9 +133,9 @@
             const artistYear = parseInt(artistValue);
             const correctYear = parseInt(correctValue);
             if (artistYear > correctYear) {
-                return artistYear - correctYear <= 5 ? 'close ^' : 'later ^';
+                return artistYear - correctYear <= 5 ? 'close v' : 'later v';
             } else {
-                return correctYear - artistYear <= 5 ? 'close v' : 'earlier v';
+                return correctYear - artistYear <= 5 ? 'close ^' : 'earlier ^';
             }
         }
 
@@ -143,9 +143,9 @@
             const artistPopularity = parseInt(artistValue);
             const correctPopularity = parseInt(correctValue);
             if (artistPopularity < correctPopularity) {
-                return correctPopularity - artistPopularity <= 50 ? 'close ^' : 'higher ^';
+                return correctPopularity - artistPopularity <= 50 ? 'close v' : 'higher v';
             } else {
-                return artistPopularity - correctPopularity <= 50 ? 'close v' : 'lower v';
+                return artistPopularity - correctPopularity <= 50 ? 'close ^' : 'lower ^';
             }
         }
 
