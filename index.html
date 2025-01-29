@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundmap Artist Guesser Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        input {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            width: 300px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            width: 120px;
+            height: 50px;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .green {
+            background-color: green;
+            color: white;
+        }
+
+        .orange {
+            background-color: orange;
+            color: white;
+        }
+
+        .grey {
+            background-color: grey;
+            color: white;
+        }
+
+        .results-container {
+            width: 80%;
+            margin-top: 40px;
+            padding: 10px;
+            border-top: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .artist-item {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .heading, .artist-item {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            width: 100%;
+            text-align: left;
+        }
+
+        .heading span {
+            font-weight: bold;
+        }
+
+        .artist-item:last-child {
+            border-bottom: none;
+        }
+
+        select {
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 14px;
+            position: absolute;
+            z-index: 10;
+        }
+
+        .button-text {
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .heading {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .guess-container {
+            margin-top: 20px;
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .guess-title {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .footer-text {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .heading, .artist-item {
+                grid-template-columns: repeat(7, 1fr);
+                text-align: left;
+            }
+
+            .heading span, .artist-item span {
+                display: inline-block;
+                margin-bottom: 0;
+            }
+
+            input {
+                width: 90%;
+            }
+
+            .results-container {
+                width: 100%;
+            }
+
+            .guess-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="footer-text">Made by u/CATninja58. Soundmap user: jeddosterives</div>
+    <h1>Soundmap Artist Guesser Game</h1>
+
+    <input type="text" id="artistSearch" placeholder="Enter artist name" oninput="searchArtist()">
+    <div id="searchResults"></div>
+
+    <div id="guessesContainer" class="guess-container"></div>
+        <!-- Guesses will be dynamically added here -->
+    </div>
+
+    <div id="artistList" class="results-container"></div>
+        <!-- Artists matching the guess will be displayed here -->
+    </div>
+    <div class="footer-text">Made by u/CATninja58. Soundmap user: jeddosterives</div>
+
+    <script>
+        let artistsData = [];
+        let artistInfo = {};
+        let filteredArtists = [];
+        let guesses = [];
+        let guessCount = 0;
+        let correct_artist = artistsData[Math.floor(Math.random() * artistsData.length)];
+        print(correct_artist);
+        let correct_artistData = [];
+
+        function loadCSV() {
+            const csvUrl = "https://raw.githubusercontent.com/CATninja58/Soundmapsolver/main/MasterArtistList.csv";
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvText => parseCSV(csvText))
+                .catch(error => console.error("Error loading CSV file:", error));
+        }
+
+        function parseCSV(csvText) {
+            const rows = csvText.split("\n");
+            rows.shift();
+            artistsData = rows.map(row => {
+                const [artist, debut, popularity, members, genre, country, gender] = row.split(",");
+                return { artist, debut, popularity, members, genre, country, gender };
+            });
+            filteredArtists = [...artistsData];
+            displayArtists();
+        }
+
+        function parseCSV(csvText) {
+            const rows = csvText.split("\n");
+            rows.shift();
+            correct_artistData = rows.map(row => {
+                const [artist, debut, popularity, members, genre, country, gender] = row.split(",");
+                return { artist, debut, popularity, members, genre, country, gender };
+            });
+            filteredArtists = [...correct_artistData];
+            displayArtists();
+        }
+
+        function searchArtist() {
+            const query = document.getElementById("artistSearch").value.toLowerCase();
+            const searchResults = document.getElementById("searchResults");
+            searchResults.innerHTML = '';
+
+            if (query) {
+            const matches = artistsData.filter(artist => artist.artist.toLowerCase().includes(query));
+            matches.forEach(match => {
+                const resultDiv = document.createElement("div");
+                resultDiv.textContent = match.artist;
+                resultDiv.onclick = () => {
+                displayArtistInfo(match.artist);
+                document.getElementById("artistSearch").value = '';
+                searchResults.innerHTML = '';
+                };
+                searchResults.appendChild(resultDiv);
+            });
+            }
+        }
+
+        function displayArtistInfo(artistName) {
+            const artist = artistsData.find(artist => artist.artist === artistName);
+            if (artist) {
+                artistInfo = artist;
+                filteredArtists = [artist];
+                displayArtists();
+                addGuess(artist);
+            }
+        }
+
+        function addGuess(artist) {
+            guessCount++;
+            const guessesContainer = document.getElementById("guessesContainer");
+
+            const guessTitle = document.createElement("div");
+            guessTitle.classList.add("guess-title");
+            guessTitle.textContent = `Guess ${guessCount}: ${artist.artist}`;
+            guessesContainer.appendChild(guessTitle);
+
+            const guessBoxes = document.createElement("div");
+            guessBoxes.classList.add("button-container");
+            guessBoxes.id = `guess${guessCount}Container`;
+            guessesContainer.appendChild(guessBoxes);
+
+            const guess = { artist, selectedOptions: {} };
+            guesses.push(guess);
+
+            createButtons(artist, guessBoxes, guess);
+        }
+
+        function createButtons(artist, container, guess) {
+            const categories = ["debut", "popularity", "members", "genre", "country", "gender"];
+            categories.forEach(category => {
+                const button = document.createElement("button");
+                button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${artist[category]}</span>`;
+                button.onclick = () => showDropdown(button, category, artist[category], guess);
+                container.appendChild(button);
+            });
+        }
+
+        function showDropdown(button, category, value, guess) {
+            const dropdown = document.createElement("select");
+            const options = getCategoryOptions(category);
+
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Choose an option";
+            dropdown.appendChild(defaultOption);
+
+            options.forEach(option => {
+                const optionElement = document.createElement("option");
+                optionElement.value = option;
+                optionElement.textContent = option;
+                dropdown.appendChild(optionElement);
+            });
+
+            dropdown.onchange = () => {
+                const selectedOption = dropdown.value;
+                guess.selectedOptions[category] = selectedOption;
+                changeButtonColor(button, selectedOption);
+                button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${value} (${selectedOption})</span>`;
+                filterArtists();
+            };
+
+            dropdown.size = options.length;
+            button.innerHTML = `<span class="button-text">${category.charAt(0).toUpperCase() + category.slice(1)}: ${value} (Choose Option)</span>`;
+            button.appendChild(dropdown);
+            dropdown.focus();
+        }
+
+        function getCategoryOptions(category) {
+            switch (category) {
+                case 'debut':
+                    return ['correct', 'later ^', 'earlier v', 'close ^', 'close v'];
+                case 'popularity':
+                    return ['correct', 'higher ^', 'lower v', 'close ^', 'close v'];
+                case 'members':
+                case 'genre':
+                case 'country':
+                case 'gender':
+                    return ['correct', 'wrong'];
+                default:
+                    return [];
+            }
+        }
+
+        function changeButtonColor(button, option) {
+            if (option === 'correct') {
+                button.className = 'green';
+            } else if (option === 'close ^' || option === 'close v') {
+                button.className = 'orange';
+            } else if (option === 'wrong') {
+                button.className = 'grey';
+            }
+        }
+
+        function filterArtists() {
+            filteredArtists = artistsData.filter(artist => {
+            return guesses.every(guess => {
+                return Object.keys(guess.selectedOptions).every(category => {
+                const option = guess.selectedOptions[category];
+                const artistValue = artist[category];
+
+                if (!option) return true;
+
+                if (option === 'correct') {
+                    return artistValue === guess.artist[category];
+                } else if (category === 'debut') {
+                    return filterDebut(option, artistValue, guess.artist[category]);
+                } else if (category === 'popularity') {
+                    return filterPopularity(option, artistValue, guess.artist[category]);
+                } else if (option === 'wrong') {
+                    return artistValue !== guess.artist[category];
+                } else {
+                    return false;
+                }
+                });
+            });
+            });
+
+            displayArtists();
+        }
+
+        function filterDebut(option, artistValue, guessValue) {
+            if (option === 'correct') {
+            return artistValue === guessValue;
+            } else if (option === 'later ^') {
+            return parseInt(artistValue) > parseInt(guessValue);
+            } else if (option === 'earlier v') {
+            return parseInt(artistValue) < parseInt(guessValue);
+            } else if (option === 'close ^') {
+            return parseInt(artistValue) > parseInt(guessValue) && Math.abs(parseInt(artistValue) - parseInt(guessValue)) <= 5;
+            } else if (option === 'close v') {
+            return parseInt(artistValue) < parseInt(guessValue) && Math.abs(parseInt(artistValue) - parseInt(guessValue)) <= 5;
+            } else {
+            return false;
+            }
+        }
+
+        function filterPopularity(option, artistValue, guessValue) {
+            if (option === 'correct') {
+            return artistValue === guessValue;
+            } else if (option === 'higher ^') {
+            return parseInt(artistValue) < parseInt(guessValue);
+            } else if (option === 'lower v') {
+            return parseInt(artistValue) > parseInt(guessValue);
+            } else if (option === 'close ^') {
+            return parseInt(artistValue) < parseInt(guessValue) && Math.abs(parseInt(artistValue) - parseInt(guessValue)) <= 50;
+            } else if (option === 'close v') {
+            return parseInt(artistValue) > parseInt(guessValue) && Math.abs(parseInt(artistValue) - parseInt(guessValue)) <= 50;
+            } else {
+            return false;
+            }
+        }
+
+        function displayArtists() {
+            const artistList = document.getElementById("artistList");
+            artistList.innerHTML = '';
+
+            const heading = document.createElement("div");
+            heading.classList.add("heading");
+            heading.innerHTML = `<span>Artist Name</span><span>Debut Year</span><span>Popularity</span><span>Members</span><span>Genre</span><span>Country</span><span>Gender</span>`;
+            artistList.appendChild(heading);
+
+            filteredArtists.forEach(artist => {
+                const artistItem = document.createElement("div");
+                artistItem.classList.add("artist-item");
+
+                artistItem.innerHTML = `
+                    <span>${artist.artist}</span>
+                    <span>${artist.debut}</span>
+                    <span>${artist.popularity}</span>
+                    <span>${artist.members}</span>
+                    <span>${artist.genre}</span>
+                    <span>${artist.country}</span>
+                    <span>${artist.gender}</span>
+                `;
+
+                artistList.appendChild(artistItem);
+            });
+        }
+
+        loadCSV();
+    </script>
+
+</body>
+</html>
