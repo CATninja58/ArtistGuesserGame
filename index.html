@@ -258,14 +258,14 @@
                 const diff = Math.abs(guessYear - correctYear);
                 if (diff === 0) return 'correct';
                 if (diff <= 5) return guessYear > correctYear ? 'close v' : 'close ^';
-                return guessYear > correctYear ? 'later ^' : 'earlier v';
+                return guessYear < correctYear ? 'later ^' : 'earlier v';
             } else if (category === 'popularity') {
                 const guessPop = parseInt(guessValue);
                 const correctPop = parseInt(correctValue);
                 const diff = Math.abs(guessPop - correctPop);
                 if (diff === 0) return 'correct';
-                if (diff <= 50) return guessPop > correctPop ? 'close v' : 'close ^';
-                return guessPop > correctPop ? 'lower v' : 'higher ^';
+                if (diff <= 50) return guessPop < correctPop ? 'close v' : 'close ^';
+                return guessPop < correctPop ? 'lower v' : 'higher ^';
             } else if (category === 'country') {
                 if (guessValue === correctValue) return 'correct';
                 const guessContinent = getContinent(guessValue);
