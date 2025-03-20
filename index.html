@@ -349,9 +349,9 @@
             </label>
         </div>
         <div class="toggle-switch">
-            <span>Popular</span>
+            <span>Popular Mode</span>
             <label class="switch">
-                <input type="checkbox" id="PopularToggle" onchange="togglePopular()">
+                <input type="checkbox" id="popularToggle" onchange="togglePopular()">
                 <span class="slider"></span>
             </label>
         </div>
@@ -422,7 +422,7 @@
                     return false;
                 });
             }
-            
+
             correctArtist = artistsData[Math.floor(Math.random() * artistsData.length)];
             console.log(correctArtist)
             displayArtists();
@@ -593,6 +593,8 @@
             body.classList.toggle('popular-mode');
             const isPopularMode = body.classList.contains('popular-mode');
             localStorage.setItem('popularMode', isPopularMode);
+
+            parseCSV();
         }
 
         function checkPopular() {
