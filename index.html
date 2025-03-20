@@ -409,7 +409,9 @@
                 return { artist, debut, popularity, members, genre, country, gender };
             });
 
-            if (document.body.classList.contains('popular-mode')) {
+            const isPopularMode = localStorage.getItem('popularMode') === 'true';
+            if (isPopularMode) {
+                console.log("popular mode")
                 const genreCount = {};
                 artistsData = artistsData.filter(artist => {
                     if (!genreCount[artist.genre]) {
@@ -422,6 +424,8 @@
                     return false;
                 });
             }
+
+
 
             correctArtist = artistsData[Math.floor(Math.random() * artistsData.length)];
             console.log(correctArtist)
