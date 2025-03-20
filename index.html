@@ -425,8 +425,6 @@
                 });
             }
 
-
-
             correctArtist = artistsData[Math.floor(Math.random() * artistsData.length)];
             console.log(correctArtist)
             displayArtists();
@@ -598,7 +596,7 @@
             const isPopularMode = body.classList.contains('popular-mode');
             localStorage.setItem('popularMode', isPopularMode);
 
-            parseCSV();
+            loadCSV();
         }
 
         function checkPopular() {
