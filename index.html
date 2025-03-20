@@ -603,7 +603,10 @@
             const isPopularMode = localStorage.getItem('popularMode') === 'true';
             if (isPopularMode) {
                 document.body.classList.add('popular-mode');
-                document.getElementById('popularModeToggle').checked = true;
+                document.getElementById('popularToggle').checked = true;
+            } else {
+                document.body.classList.remove('popular-mode');
+                document.getElementById('popularToggle').checked = false;
             }
         }
 
