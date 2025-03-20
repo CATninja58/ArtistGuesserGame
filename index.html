@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artist Guesser Game</title>
@@ -129,9 +130,233 @@
                 font-size: 11px;
             }
         }
+
+        /* Cog icon styles */
+        .cog-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            color: #f4f4f4;
+            transition: color 0.3s ease;
+        }
+
+        .cog-icon:hover {
+            color: #159643; /* Green on hover */
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #1c1c1c;
+            transition: left 0.3s ease;
+            z-index: 999;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            visibility: hidden; /* Hide initially */
+        }
+
+        .sidebar.open {
+            left: 0;
+            visibility: visible; /* Show when open */
+        }
+
+        .sidebar h2 {
+            color: #f4f4f4;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #f4f4f4;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #159643;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Light mode styles */
+        body.light-mode {
+            background-color: #f4f4f4;
+            color: #1c1c1c;
+        }
+
+        body.light-mode h1,
+        body.light-mode .footer-text,
+        body.light-mode .guess-title,
+        body.light-mode .guess-artist,
+        body.light-mode th,
+        body.light-mode td,
+        body.light-mode .help-button,
+        body.light-mode #searchResults div,
+        body.light-mode .guess-container,
+        body.light-mode #bestGuessContainer div {  /* Added best guess container */
+            color: #1c1c1c !important; /* This is for the following: Title, header, guess #1, everything in list of possible artists,  */
+        }
+
+        body.light-mode input,
+        body.light-mode button {
+            background-color: #ffffff;
+            color: #1c1c1c;
+            border: 1px solid #ccc;
+        }
+
+        body.light-mode .sidebar {
+            background-color: #ffffff;
+            color: #1c1c1c;
+        }
+
+        body.light-mode .sidebar h2,
+        body.light-mode .toggle-switch {
+            color: #1c1c1c;
+        }
+
+        body.light-mode .slider {
+            background-color: #ccc;
+        }
+
+        body.light-mode input:checked + .slider {
+            background-color: #159643;
+        }
+
+        body.light-mode .cog-icon {
+            color: #1c1c1c; /* Black in light mode */
+        }
+
+        body.light-mode .cog-icon:hover {
+            color: #159643; /* Green on hover */
+        }
+
+        body.light-mode .help-button {
+            background-color: #ccc; /* Grey background */
+            color: #1c1c1c; /* Black text */
+        }
+
+        body.light-mode .help-button:hover {
+            background-color: #159643; /* Green on hover */
+            color: #1c1c1c; /* Black text */
+        }
+
+        /* Ensure guess boxes retain their colors in light mode */
+        body.light-mode .green { background-color: #159643 !important; }
+        body.light-mode .orange { background-color: #b19600 !important; }
+        body.light-mode .grey { background-color: grey !important; }
+
+        /* Dark mode adjustments for guess artist titles */
+        body:not(.light-mode) .guess-artist {
+            color: #f4f4f4; /* White text color */
+        }
+
+        /* Light mode adjustments */
+        body.light-mode .help-overlay {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        body.light-mode .help-content {
+            background-color: #ffffff;
+            color: #1c1c1c;
+        }
+
+        body.light-mode .help-overlay h1,
+        body.light-mode .help-overlay h2,
+        body.light-mode .help-overlay h3 {
+            color: #159643;
+        }
+
+        body.light-mode .close-help {
+            color: #1c1c1c;
+        }
+
+        /* Light mode adjustments */
+        body.light-mode .help-overlay {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        body.light-mode .help-content {
+            background-color: #ffffff;
+            color: #1c1c1c;
+        }
+
+        body.light-mode .help-overlay h1,
+        body.light-mode .help-overlay h2,
+        body.light-mode .help-overlay h3 {
+            color: #159643;
+        }
+
+        body.light-mode .close-help {
+            color: #1c1c1c;
+        }
     </style>
 </head>
 <body>
+    <i class="fas fa-cog cog-icon" onclick="toggleSidebar()"></i>
+    <div class="sidebar" id="sidebar">
+        <h2>Settings</h2>
+        <div class="toggle-switch">
+            <span>Light Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="lightModeToggle" onchange="toggleLightMode()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-switch">
+            <span>Popular</span>
+            <label class="switch">
+                <input type="checkbox" id="PopularToggle" onchange="togglePopular()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
     <h1>Artist Guesser Game</h1>
 
     <input type="text" id="artistSearch" placeholder="Enter artist name" oninput="searchArtist()">
@@ -183,6 +408,21 @@
                 const [artist, debut, popularity, members, genre, country, gender] = row.split(",");
                 return { artist, debut, popularity, members, genre, country, gender };
             });
+
+            if (document.body.classList.contains('popular-mode')) {
+                const genreCount = {};
+                artistsData = artistsData.filter(artist => {
+                    if (!genreCount[artist.genre]) {
+                        genreCount[artist.genre] = 0;
+                    }
+                    if (genreCount[artist.genre] < 50) {
+                        genreCount[artist.genre]++;
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            
             correctArtist = artistsData[Math.floor(Math.random() * artistsData.length)];
             console.log(correctArtist)
             displayArtists();
@@ -318,6 +558,54 @@
                 artistList.appendChild(artistItem);
             });
         }
+
+        // Function to toggle the sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+            if (!sidebar.classList.contains('open')) {
+                // Wait for the transition to complete before hiding
+                setTimeout(() => {
+                    sidebar.style.visibility = 'hidden';
+                }, 300); // Match the transition duration
+            } else {
+                sidebar.style.visibility = 'visible';
+            }
+        }
+
+        function toggleLightMode() {
+            const body = document.body;
+            body.classList.toggle('light-mode');
+            const isLightMode = body.classList.contains('light-mode');
+            localStorage.setItem('lightMode', isLightMode);
+        }
+
+        function checkLightModePreference() {
+            const isLightMode = localStorage.getItem('lightMode') === 'true';
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                document.getElementById('lightModeToggle').checked = true;
+            }
+        }
+
+        function togglePopular() {
+            const body = document.body;
+            body.classList.toggle('popular-mode');
+            const isPopularMode = body.classList.contains('popular-mode');
+            localStorage.setItem('popularMode', isPopularMode);
+        }
+
+        function checkPopular() {
+            const isPopularMode = localStorage.getItem('popularMode') === 'true';
+            if (isPopularMode) {
+                document.body.classList.add('popular-mode');
+                document.getElementById('popularModeToggle').checked = true;
+            }
+        }
+
+        // Initialize light mode preference on page load
+        document.addEventListener('DOMContentLoaded', checkLightModePreference);
+        document.addEventListener('DOMContentLoaded', checkPopular);
 
         loadCSV();
     </script>
