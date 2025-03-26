@@ -359,6 +359,8 @@
 
     <h1>Artist Guesser Game</h1>
 
+    <button onclick="resetSolver()">Reset</button>
+
     <input type="text" id="artistSearch" placeholder="Enter artist name" oninput="searchArtist()">
     <div id="searchResults"></div>
 
@@ -559,6 +561,13 @@
                 `;
                 artistList.appendChild(artistItem);
             });
+        }
+
+        function resetSolver() {
+            guesses = [];
+            guessCount = 0;
+            document.getElementById("guessesContainer").innerHTML = '';
+            loadCSV();
         }
 
         // Function to toggle the sidebar
